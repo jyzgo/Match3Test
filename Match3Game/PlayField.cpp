@@ -35,9 +35,18 @@ void PlayField::GeneratePlayField(const int & width, const int & height, const i
 
 }
 
+void PlayField::CheckNeedShuffle()
+{
+	while (!ContainsPossibleMoves())
+	{
+		Populate();
+		DetectPossibleMoves();
+	}
+}
+
 void PlayField::PrintField(string str)
 {
-	cout << "--PrintField-- " << str.c_str() <<endl;
+	cout <<  str.c_str() <<endl;
 	for (int y = 0; y < _rows; y++)
 	{
 		for (int x = 0; x < _columns; x++)
@@ -175,8 +184,6 @@ void PlayField::DetectColorsSequences()
 					int sequencePosition = position + sequence;
 					_colorSequences.at(sequencePosition) = true;
 
-					// call handler
-					SequenceFound(x + sequence, y);
 				}
 			}
 			// check if a sequence of at least 3 vertical matching color has been found
@@ -187,19 +194,15 @@ void PlayField::DetectColorsSequences()
 					int sequencePosition = position + sequence * _columns;
 					_colorSequences.at(sequencePosition) = true;
 
-					// call handler
-					SequenceFound(x, y + sequence);
 				}
 			}
 		}
 	}
 }
-void PlayField::SequenceFound(int x, int y)
-{
-	//Auto Match the sequences
-}
+
 void PlayField::DetectPossibleMoves()
 {
+	ClearPossibleMatch();
 	// traverse the board rows to find horizontal color sequences
 	for (int y = 0; y < _rows; ++y)
 	{
@@ -213,11 +216,11 @@ void PlayField::DetectPossibleMoves()
 			if (x < _columns - 2 && _colors[currentIndex + 2] == color) {
 				if (y > 0 && color == _colors[currentIndex + 1 - _columns])
 				{
-					AddMoves(x + 1, y, x + 1, y - 1);
+					AddPossibleMoves(x + 1, y, x + 1, y - 1);
 				}
 				if (y < _rows - 1 && color == _colors[currentIndex + 1 + _columns])
 				{
-					AddMoves(x + 1, y, x + 1, y + 1);
+					AddPossibleMoves(x + 1, y, x + 1, y + 1);
 				}
 			}
 			//   1
@@ -226,11 +229,11 @@ void PlayField::DetectPossibleMoves()
 			if (y < _rows - 2 && _colors[currentIndex + 2 * _columns] == color) {
 				if (x > 0 && color == _colors[currentIndex - 1 + _columns])
 				{
-					AddMoves(x, y + 1, x - 1, y + 1);
+					AddPossibleMoves(x, y + 1, x - 1, y + 1);
 				}
 				if (x < _columns - 1 && color == _colors[currentIndex + 1 + _columns])
 				{
-					AddMoves(x, y + 1, x + 1, y + 1);
+					AddPossibleMoves(x, y + 1, x + 1, y + 1);
 				}
 
 
@@ -241,15 +244,15 @@ void PlayField::DetectPossibleMoves()
 			if (x < _columns - 2 && _colors[currentIndex + 1] == color) {
 				if (y > 0 && color == _colors[currentIndex + 2 - _columns])
 				{
-					AddMoves(x + 2, y, x + 2, y - 1);
+					AddPossibleMoves(x + 2, y, x + 2, y - 1);
 				}
 				if (y < _rows - 1 && color == _colors[currentIndex + 2 + _columns])
 				{
-					AddMoves(x + 2, y, x + 2, y + 1);
+					AddPossibleMoves(x + 2, y, x + 2, y + 1);
 				}
 				if (x < _columns - 3 && color == _colors[currentIndex + 3])
 				{
-					AddMoves(x + 2, y, x + 3, y);
+					AddPossibleMoves(x + 2, y, x + 3, y);
 				}
 			}
 			//   3
@@ -258,15 +261,15 @@ void PlayField::DetectPossibleMoves()
 			if (x > 1 && _colors[currentIndex - 1] == color) {
 				if (y > 0 && color == _colors[currentIndex - 2 - _columns])
 				{
-					AddMoves(x - 2, y, x - 2, y - 1);
+					AddPossibleMoves(x - 2, y, x - 2, y - 1);
 				}
 				if (y < _rows - 1 && color == _colors[currentIndex - 2 + _columns])
 				{
-					AddMoves(x - 2, y, x - 2, y + 1);
+					AddPossibleMoves(x - 2, y, x - 2, y + 1);
 				}
 				if (x > 2 && color == _colors[currentIndex - 3])
 				{
-					AddMoves(x - 2, y, x - 3, y);
+					AddPossibleMoves(x - 2, y, x - 3, y);
 				}
 			}
 			//   1
@@ -276,15 +279,15 @@ void PlayField::DetectPossibleMoves()
 			if (y < _rows - 2 && _colors[currentIndex + _columns] == color) {
 				if (x > 0 && color == _colors[currentIndex - 1 + 2 * _columns])
 				{
-					AddMoves(x, y + 2, x - 1, y + 2);
+					AddPossibleMoves(x, y + 2, x - 1, y + 2);
 				}
 				if (x < _columns - 1 && color == _colors[currentIndex + 1 + 2 * _columns])
 				{
-					AddMoves(x, y + 2, x + 1, y + 2);
+					AddPossibleMoves(x, y + 2, x + 1, y + 2);
 				}
 				if (y < _rows - 3 && color == _colors[currentIndex + 3 * _columns])
 				{
-					AddMoves(x, y + 2, x, y + 3);
+					AddPossibleMoves(x, y + 2, x, y + 3);
 				}
 			}
 			//   3
@@ -294,15 +297,15 @@ void PlayField::DetectPossibleMoves()
 			if (y > 1 && _colors[currentIndex - _columns] == color) {
 				if (x > 0 && color == _colors[currentIndex - 1 - 2 * _columns])
 				{
-					AddMoves(x, y - 2, x - 1, y - 2);
+					AddPossibleMoves(x, y - 2, x - 1, y - 2);
 				}
 				if (x < _columns - 1 && color == _colors[currentIndex + 1 - 2 * _columns])
 				{
-					AddMoves(x, y - 2, x + 1, y - 2);
+					AddPossibleMoves(x, y - 2, x + 1, y - 2);
 				}
 				if (y > 2 && color == _colors[currentIndex - 3 * _columns])
 				{
-					AddMoves(x, y - 2, x, y - 3);
+					AddPossibleMoves(x, y - 2, x, y - 3);
 				}
 			}
 
@@ -311,7 +314,7 @@ void PlayField::DetectPossibleMoves()
 	}
 }
 
-void  PlayField::AddMoves(int fromx, int fromy, int tarX, int tarY)
+void  PlayField::AddPossibleMoves(int fromx, int fromy, int tarX, int tarY)
 {
 
 	MatchMove m;
@@ -323,86 +326,7 @@ void  PlayField::AddMoves(int fromx, int fromy, int tarX, int tarY)
 
 }
 
-bool PlayField::IsMatched(Cell cell, Cell originCell)
-{
-	return IsMatched(cell.x, cell.y, originCell.x, originCell.y);
-}
-//put a color to position x y, is it be matched
-bool PlayField::IsMatched(int x, int y, int originX, int originY)
-{
-	int position = y * _columns + x;
-	int color = GetColor(originX, originY);
-	//look up
-	int upColorSeqences = 1;
-	for (int i = 1; i < 3 && y - i >= 0; i++)
-	{
 
-		int searchPos = (y - i) * _columns + x;
-		int matchingColor = _colors[searchPos];
-		if (matchingColor != color)
-		{
-			break;
-		}
-		upColorSeqences++;
-	}
-
-	if (upColorSeqences >= 3)
-	{
-		return true;
-	}
-
-	//look right
-	int rightColorSeqences = 1;
-	for (int i = 1; i < 3 && x + i < _columns; i++)
-	{
-		int searchPos = y * _columns + (x + i);
-		int matchingColor = _colors[searchPos];
-		if (matchingColor != color)
-		{
-			break;
-		}
-		rightColorSeqences++;
-	}
-	if (rightColorSeqences >= 3)
-	{
-		return true;
-	}
-	//look down
-	int downColorSeqences = 1;
-	for (int i = 1; i < 3 && y + i < _columns; i++)
-	{
-		int searchPos = (y + i) * _columns + x;
-		int matchingColor = _colors[searchPos];
-		if (matchingColor != color)
-		{
-			break;
-		}
-		downColorSeqences++;
-	}
-	if (downColorSeqences >= 3)
-	{
-		return true;
-	}
-
-	//look left
-	int leftColorSeqences = 1;
-	for (int i = 1; i < 3 && x - i >= 0; i++)
-	{
-		int searchPos = y * _columns + x - i;
-		int matchingColor = _colors[searchPos];
-		if (matchingColor != color)
-		{
-			break;
-		}
-		leftColorSeqences++;
-	}
-	if (leftColorSeqences >= 3)
-	{
-		return true;
-	}
-
-	return false;
-}
 
 bool PlayField::ContainsPossibleMoves()
 {
@@ -454,9 +378,8 @@ bool PlayField::Step(int sourceX, int sourceY, int targetX, int targetY)
 		RemoveSequences();
 		//create new Color
 		while (DropColors()) {}
-		ClearPossibleMatch();
 		DetectPossibleMoves();
-		PrintField("After Drop Color");
+		PrintField("Colors Droped!");
 		FindAndRemoveSequences();
 		return true;
 	}
@@ -470,19 +393,22 @@ bool PlayField::Step(int sourceX, int sourceY, int targetX, int targetY)
 		return false;
 	}
 
-	//---
 
 }
 
 void PlayField::FindAndRemoveSequences()
 {
+	bool findSequences = false;
+	DetectColorsSequences();
 	while (ContainsSequences())
 	{
+		findSequences = true;
 		RemoveSequences();
-		while (DropColors())
-		{
-
-		}
+		while (DropColors()) {}
+	DetectColorsSequences();
+	}
+	if (findSequences) {
+		CheckNeedShuffle();
 	}
 }
 
@@ -508,7 +434,7 @@ void PlayField::RemoveSequences()
 	{
 		*it = false;
 	}
-	PrintField("remove seq");
+	PrintField("Color Matched!! -1 is hole");
 }
 
 bool PlayField::DropColors()
@@ -575,6 +501,11 @@ const int & PlayField::GetHoles()
 {
 	return _holes;
 }
+PlayField::~PlayField()
+{
+	_colorSequences.clear();
+	_colors.clear();
+}
 void PlayField::SwapColors(const Cell & fromCell, const Cell & toCell)
 {
 	SwapColors(fromCell.x, fromCell.y, toCell.x, toCell.y);
@@ -616,124 +547,4 @@ void PlayField::ClearPossibleMatch()
 {
 	_possibleMoves.clear();
 }
-bool PlayField::IsPossibleSequence(const int & x, const int & y, const int & tarX, const int & tarY)
-{
 
-	auto color = _colors[y*_columns + x];
-	//   3
-	// 1 x 2
-	//   3
-	if (x < _columns - 2 && _colors[x + 2] == color) {
-		if (y > 0 && color == _colors[x + 1 - _columns]) return true;
-		if (y < _rows - 1 && color == _colors[x + 1 + _columns]) return true;
-	}
-	//   1
-	// 3 x 3
-	//   2
-	if (y < _rows - 2 && _colors[x + 2 * _columns] == color) {
-		if (x > 0 && color == _colors[x - 1 + _columns]) return true;
-		if (x < _columns - 1 && color == _colors[x + 1 + _columns]) return true;
-	}
-	//     3
-	// 1 2 x 3
-	//     3
-	if (x < _columns - 2 && _colors[x + 1] == color) {
-		if (y > 0 && color == _colors[x + 2 - _columns]) return true;
-		if (y < _rows - 1 && color == _colors[x + 2 + _columns]) return true;
-		if (x < _columns - 3 && color == _colors[x + 3]) return true;
-	}
-	//   3
-	// 3 x 2 1
-	//   3
-	if (x > 1 && _colors[x - 1] == color) {
-		if (y > 0 && color == _colors[x - 2 - _columns]) return true;
-		if (y < _rows - 1 && color == _colors[x - 2 + _columns]) return true;
-		if (x > 2 && color == _colors[x - 3]) return true;
-	}
-	//   1
-	//   2
-	// 3 x 3
-	//   3
-	if (y < _rows - 2 && _colors[x + _columns] == color) {
-		if (x > 0 && color == _colors[x - 1 + 2 * _columns]) return true;
-		if (x < _columns - 1 && color == _colors[x + 1 + 2 * _columns]) return true;
-		if (y < _rows - 3 && color == _colors[x + 3 * _columns]) return true;
-	}
-	//   3
-	// 3 x 3
-	//   2
-	//   1
-	if (y > 1 && _colors[x - _columns] == color) {
-		if (x > 0 && color == _colors[x - 1 - 2 * _columns]) return true;
-		if (x < _columns - 1 && color == _colors[x + 1 - 2 * _columns]) return true;
-		if (y > 2 && color == _colors[x - 3 * _columns]) return true;
-	}
-
-
-	return false;
-
-}
-
-bool PlayField::IsPartOfSequence(const int & cellX, const int & cellY)
-{
-	// look in all directions and check 
-
-	uint8_t sourceColor = _colors[cellY * _columns + cellX];
-	// look right
-	if (cellX < (_columns - 2))
-	{
-		if (sourceColor == _colors[cellY * _columns + cellX + 1] && sourceColor == _colors[cellY * _columns + cellX + 2])
-		{
-			return true;
-		}
-	}
-
-	// look left
-	if (cellX > 1)
-	{
-		if (sourceColor == _colors[cellY * _columns + cellX - 1] && sourceColor == _colors[cellY * _columns + cellX - 2])
-		{
-			return true;
-		}
-	}
-
-	// look left and right 1 tile
-	if (cellX > 0 && cellX < (_columns - 1))
-	{
-		if (sourceColor == _colors[cellY * _columns + cellX - 1] && sourceColor == _colors[cellY * _columns + cellX + 1])
-		{
-			return true;
-		}
-	}
-
-	// look down
-	if (cellY < (_rows - 2))
-	{
-		if (sourceColor == _colors[(cellY + 1) * _columns + cellX] && sourceColor == _colors[(cellY + 2) * _columns + cellX])
-		{
-			return true;
-		}
-	}
-
-	// look up
-	if (cellY > 1)
-	{
-		if (sourceColor == _colors[(cellY - 1) * _columns + cellX] && sourceColor == _colors[(cellY - 2) * _columns + cellX])
-		{
-			return true;
-		}
-	}
-
-	// look up and down 1 tile
-	if (cellY > 0 && cellY < (_rows - 1))
-	{
-		if (sourceColor == _colors[(cellY - 1) * _columns + cellX] && sourceColor == _colors[(cellY + 1) * _columns + cellX])
-		{
-			return true;
-		}
-	}
-
-	return false;
-
-
-}

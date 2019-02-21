@@ -21,39 +21,17 @@ class PlayField
 {
 public:
 	void GeneratePlayField(const int& width,const int& height,const int&numTypes);
+	void CheckNeedShuffle();
 	void PrintField(string str);
-	//Retrives the color of a cell
-	const int GetColor(const int& column, const int& row);
 
 	void SwapColors(const Cell& fromCell, const Cell& toCell);
 	void SwapColors(const int& sourceX, const int& sourceY, const int& targetX, const int& targetY);
-	//
 	void Populate();
 
-	void DetectColorsSequences();
-
-	void SequenceFound(int x, int y);
-
-	void DetectPossibleMoves();
-
-	void AddMoves(int fromx, int fromy, int tarX, int tarY);
-
-	bool IsMatched(Cell cell, Cell originCell);
-
-	bool IsMatched(int x, int y,int originX, int originY);
-
-	bool ContainsPossibleMoves();
-
-	const bool ContainsSequences();
-
-	bool DropColors();
+	void AddPossibleMoves(int fromx, int fromy, int tarX, int tarY);
 
 	bool Step(Cell fromCell, Cell toCell);
 	bool Step(int fromX, int fromY, int toX, int toY);
-
-	void FindAndRemoveSequences();
-
-	void RemoveSequences();
 
 	const std::vector<MatchMove >& GetPossibleMoves() const;
 
@@ -63,15 +41,12 @@ public:
 	const int& GetRows();
 	// returns amount of holes
 	const int& GetHoles();
-	const int GetRandomColor();
+	~PlayField();
 private:
 	int _columns;
 	int _rows;
 	int _numTypes;
-
 	int _holes;
-	
-	
 	//hold color info of each cell;
 	vector<int> _colors;
 
@@ -81,17 +56,22 @@ private:
 	// get a uniform distribution for random number generation
 	std::uniform_int_distribution<uint32_t> uint_dist;
 
-
-	void ClearPossibleMatch();
-
-	bool IsPossibleSequence(const int & cellX, const int & cellY,const int & tarX, const int & tarY );
-
-	bool IsPartOfSequence(const int& cellX, const int& cellY);
+	//Retrives the color of a cell
+	const int GetColor(const int& column, const int& row);
 
 	// a bit array that describes valid color sequences on the board
 	std::vector<bool> _colorSequences;
 
 	//possible moves on the board
 	std::vector<MatchMove> _possibleMoves;
+	void DetectColorsSequences();
+	void DetectPossibleMoves();
+	bool ContainsPossibleMoves();
+	const bool ContainsSequences();
+	bool DropColors();
+	void FindAndRemoveSequences();
+	void RemoveSequences();
+	const int GetRandomColor();
+	void ClearPossibleMatch();
 };
 

@@ -41,6 +41,7 @@ void PlayBot::Run()
 void PlayBot::MoveStep()
 {
 	std::vector<MatchMove> possibleMoves = _playField->GetPossibleMoves();
+	
 	MatchMove first = possibleMoves[0];
 	_playField->Step(first.x, first.y, first.targetX, first.targetY);
 	_playField->PrintField("Bot move step Finish");
