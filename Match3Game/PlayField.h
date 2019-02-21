@@ -64,13 +64,19 @@ private:
 
 	//possible moves on the board
 	std::vector<MatchMove> _possibleMoves;
+	
+	//Find exists color sequences
 	void DetectColorsSequences();
-	void DetectPossibleMoves();
-	bool ContainsPossibleMoves();
 	const bool ContainsSequences();
-	bool DropColors();
 	void FindAndRemoveSequences();
 	void RemoveSequences();
+
+	//Find possible moves
+	void DetectPossibleMoves();
+	bool ContainsPossibleMoves();
+	
+	//Generate new colors and drop them
+	bool DropColors();
 	const int GetRandomColor();
 	void ClearPossibleMatch();
 };

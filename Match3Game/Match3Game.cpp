@@ -9,16 +9,11 @@ int main()
 {
     std::cout << "Welcome to play"<<endl; 
 
-
-
 	PlayField* field = new PlayField();
 	field->GeneratePlayField(4, 4, 4);
 	field->PrintField("main");
 	PlayBot* bot = PlayBot::Create(field);
 	bot->Run();
-	
-
-
 	return 0;
 
 }
